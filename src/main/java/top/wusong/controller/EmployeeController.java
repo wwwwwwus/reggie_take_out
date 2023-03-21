@@ -3,6 +3,7 @@ package top.wusong.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import top.wusong.common.Result;
@@ -11,6 +12,7 @@ import top.wusong.exception.BusinessException;
 import top.wusong.service.EmployeeService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 
 @RestController
@@ -92,7 +94,6 @@ public class EmployeeController {
      * @param employee 员工
      * @return 是添加成功！
      */
-
     @PostMapping
     public Result<String> addEmployee(@RequestBody Employee employee, HttpServletRequest httpServletRequest) {
         //添加那些初始值
@@ -104,13 +105,12 @@ public class EmployeeController {
         employee.setCreateUser(id);
         employee.setUpdateUser(id);
         //调用添加方法
-        try {
+       /* try {
             employeeService.save(employee);
-        } catch (Exception e) {
+        } catch (DuplicateKeyException e) {
             throw new BusinessException("添加失败！用户名重复！");
-
-        }
-
+        }*/
+        employeeService.save(employee);
         return Result.success("添加成功！");
     }
   /*  @PostMapping
