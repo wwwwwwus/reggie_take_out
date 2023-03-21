@@ -142,7 +142,6 @@ public class EmployeeController {
      * @return Page<Employee> 每一页的数据
      */
     @GetMapping("/page")
-    @ResponseBody
     public Result<Page<Employee>> getAllByPage(String name, Long page, Long pageSize) {
         LambdaQueryWrapper<Employee> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //1、判断是否添加了姓名
