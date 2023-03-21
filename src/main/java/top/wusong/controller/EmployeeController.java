@@ -7,6 +7,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import top.wusong.common.Result;
 import top.wusong.domain.Employee;
+import top.wusong.exception.BusinessException;
 import top.wusong.service.EmployeeService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,12 +85,35 @@ public class EmployeeController {
                       this.$message.success('员工添加成功！')
                       前端的接收方式
      */
+
     /**
      * 添加一个员工
+     *
      * @param employee 员工
      * @return 是添加成功！
      */
+
     @PostMapping
+    public Result<String> addEmployee(@RequestBody Employee employee, HttpServletRequest httpServletRequest) {
+        //添加那些初始值
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+        //获取当前用户的id
+        Long id = (Long) httpServletRequest.getSession().getAttribute("id");
+        employee.setCreateUser(id);
+        employee.setUpdateUser(id);
+        //调用添加方法
+        try {
+            employeeService.save(employee);
+        } catch (Exception e) {
+            throw new BusinessException("添加失败！用户名重复！");
+
+        }
+
+        return Result.success("添加成功！");
+    }
+  /*  @PostMapping
     public Result<String> addEmployee(@RequestBody Employee employee,HttpServletRequest httpServletRequest){
         //添加那些初始值
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
@@ -106,6 +130,6 @@ public class EmployeeController {
          return Result.success("添加成功！");
         }
         return Result.error("添加失败！用户已存在");
-    }
+    }*/
 
 }
