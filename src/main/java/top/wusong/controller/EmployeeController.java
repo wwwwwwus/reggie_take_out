@@ -1,6 +1,7 @@
 package top.wusong.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.dao.DuplicateKeyException;
@@ -131,5 +132,39 @@ public class EmployeeController {
         }
         return Result.error("添加失败！用户已存在");
     }*/
+
+    /**
+     * 分页查询
+     *
+     * @param name     姓名
+     * @param page     第几页
+     * @param pageSize 每页显示的条数
+     * @return Page<Employee> 每一页的数据
+     */
+    @GetMapping("/page")
+    @ResponseBody
+    public Result<Page<Employee>> getAllByPage(String name, Long page, Long pageSize) {
+        LambdaQueryWrapper<Employee> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //1、判断是否添加了姓名
+        if (name != null) {
+            lambdaQueryWrapper.like(Employee::getName, name);
+        }
+        //2、添加分页对象
+        Page<Employee> pages = new Page<>(page,pageSize);
+        employeeService.page(pages,lambdaQueryWrapper);
+        return Result.success(pages);
+    }
+
+    /**
+     *  更新用户第一步
+     * @param id 用户id
+     * @return 查询的用户信息
+     */
+    @GetMapping("/{id}")
+    public Result<Employee> updateEmployee(@PathVariable Long id){
+        //根据id查询
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
 
 }

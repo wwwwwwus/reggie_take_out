@@ -1,6 +1,7 @@
 package top.wusong;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,4 +26,10 @@ class ReggieTakeOutApplicationTests {
         System.out.println(employee1);
     }
 
+    void testPage(){
+        LambdaQueryWrapper<Employee> employeeLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        Page<Employee> page = new Page<>();
+        employeeDao.selectPage(page,employeeLambdaQueryWrapper);
+        System.out.println(page);
+    }
 }

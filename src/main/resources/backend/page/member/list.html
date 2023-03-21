@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
   <link rel="stylesheet" href="../../styles/common.css" />
   <link rel="stylesheet" href="../../styles/page.css" />
+
   <style>
     #member-app  .notAdmin::after{
       border: 0 !important;
@@ -127,7 +128,9 @@
         computed: {},
         created() {
           this.init()
-          this.user = JSON.parse(localStorage.getItem('userInfo')).username
+          if (localStorage.getItem('userInfo')!=null){
+            this.user = JSON.parse(localStorage.getItem('userInfo')).username
+          }
         },
         mounted() {
         },
@@ -153,6 +156,7 @@
           },
            // 添加
           addMemberHandle (st) {
+            alert(st)
             if (st === 'add'){
               window.parent.menuHandle({
                 id: '2',
@@ -196,7 +200,9 @@
             this.init()
           }
         }
-      })
+      }
+      )
+
     </script>
 </body>
 </html>
