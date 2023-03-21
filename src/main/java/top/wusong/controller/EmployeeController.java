@@ -63,4 +63,18 @@ public class EmployeeController {
         return Result.success(employee1);
 
     }
+
+    /**
+     * 退出登录
+     * @param httpServletRequest 清除登录缓存
+     * @return 返回推出登录成功
+     */
+    @PostMapping("/logout")
+    public Result<String> logout(HttpServletRequest httpServletRequest){
+        //1、清除登录缓存
+        httpServletRequest.getSession().removeAttribute("id");
+        //2、提示退出登录成功！
+        return Result.success("成功退出登录！");
+    }
+
 }
