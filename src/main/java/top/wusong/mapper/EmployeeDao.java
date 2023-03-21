@@ -6,4 +6,5 @@ import top.wusong.domain.Employee;
 
 @Mapper
 public interface EmployeeDao extends BaseMapper<Employee> {
+
 }

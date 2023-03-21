@@ -6,7 +6,7 @@ spring:
   datasource:
     username: root
     password: Lsn5_
-    url: jdbc:mysql://118.31.52.197:3306/db_reggie?CharsetEncoding=utf-8
+    url: jdbc:mysql://118.31.52.197:3306/db_reggie?useUnicode=true&characterEncoding=utf-8
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
 # 实体类对应数据库表时驼峰转换为下划线userName->user_name
