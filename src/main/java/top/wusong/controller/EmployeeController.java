@@ -3,17 +3,13 @@ package top.wusong.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 import top.wusong.common.Result;
 import top.wusong.domain.Employee;
-import top.wusong.exception.BusinessException;
 import top.wusong.service.EmployeeService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 
 @RestController
