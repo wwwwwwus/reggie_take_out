@@ -156,6 +156,7 @@ public class EmployeeController {
 
     /**
      *  更新用户第一步
+     *  也是做更新用户状态的方法
      * @param id 用户id
      * @return 查询的用户信息
      */
@@ -164,6 +165,25 @@ public class EmployeeController {
         //根据id查询
         Employee employee = employeeService.getById(id);
         return Result.success(employee);
+    }
+
+    /**
+     * 更新方法第二步
+     * @param employee 用户更新后的参数
+     * @return 更新结果
+     */
+    @PutMapping
+    public Result<Boolean> updateEmployeeTwo(@RequestBody Employee employee,HttpServletRequest request){
+        //添加修改人信息
+        employee.setUpdateUser((Long) request.getSession().getAttribute("id"));
+        //添加修改信息时间
+        employee.setUpdateTime(LocalDateTime.now());
+        boolean update_flag = employeeService.updateById(employee);
+        if (update_flag){
+            return Result.success(update_flag);
+        }
+        return Result.error("更新失败");
+
     }
 
 }
