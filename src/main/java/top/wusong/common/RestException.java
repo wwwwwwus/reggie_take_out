@@ -1,4 +1,4 @@
-package top.wusong.controller;
+package top.wusong.common;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ExceptionHandler;

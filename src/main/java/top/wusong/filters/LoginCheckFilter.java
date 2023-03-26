@@ -3,6 +3,7 @@ package top.wusong.filters;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
+import top.wusong.common.BaseContext;
 import top.wusong.common.Result;
 
 import javax.servlet.*;
@@ -46,6 +47,10 @@ public class LoginCheckFilter implements Filter {
         //4、判断请求是否携带了登录信息
         if (httpServletRequest.getSession().getAttribute("id") != null){
             log.info("已登录的请求{}"+requestURI);
+            //获取用户的id
+            Long id = (Long) httpServletRequest.getSession().getAttribute("id");
+            //放入线程当中，用在后面自动填充当中
+            BaseContext.setEmployeeId(id);
             //放行
             filterChain.doFilter(servletRequest,servletResponse);
             //放行直接终止请求

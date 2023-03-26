@@ -30,8 +30,13 @@ public class Employee {
 
     private Integer status;
 
+
+    //新增时自动更新
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    //更新和新增时自动更新
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     @TableField(fill = FieldFill.INSERT)

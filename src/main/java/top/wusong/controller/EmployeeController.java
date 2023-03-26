@@ -168,12 +168,26 @@ public class EmployeeController {
      * @param employee 用户更新后的参数
      * @return 更新结果
      */
-    @PutMapping
+   /* @PutMapping
     public Result<Boolean> updateEmployeeTwo(@RequestBody Employee employee,HttpServletRequest request){
         //添加修改人信息
         employee.setUpdateUser((Long) request.getSession().getAttribute("id"));
         //添加修改信息时间
         employee.setUpdateTime(LocalDateTime.now());
+        boolean update_flag = employeeService.updateById(employee);
+        if (update_flag){
+            return Result.success(update_flag);
+        }
+        return Result.error("更新失败");
+
+    }*/
+    //使用了自动填充的方法
+    @PutMapping
+    public Result<Boolean> updateEmployeeTwo(@RequestBody Employee employee,HttpServletRequest request){
+        //添加修改人信息
+        //employee.setUpdateUser((Long) request.getSession().getAttribute("id"));
+        //添加修改信息时间
+        //employee.setUpdateTime(LocalDateTime.now());
         boolean update_flag = employeeService.updateById(employee);
         if (update_flag){
             return Result.success(update_flag);
