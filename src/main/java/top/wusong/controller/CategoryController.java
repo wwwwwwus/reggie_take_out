@@ -1,10 +1,83 @@
 package top.wusong.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import top.wusong.common.Result;
+import top.wusong.domain.Category;
+import top.wusong.service.CategoryService;
 
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
+
+    @Autowired
+    private  CategoryService categoryService;
+
+    /**
+     * 分页查询
+     * @param page 当前是第几页
+     * @param pageSize 每页展示多少条
+     * @return Result<Page<Category>> 每页的数据
+     */
+    @GetMapping("/page")
+    public Result<Page<Category>> getAllByPage(Long page,Long pageSize){
+        //设置分页对象，当前是哪页，每页显示多少
+        Page<Category> pages = new Page<>(page,pageSize);
+        //根据sort排序
+        LambdaQueryWrapper<Category> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.orderByAsc(Category::getSort);
+        //查询
+        categoryService.page(pages,lambdaQueryWrapper);
+        return Result.success(pages);
+    }
+
+    /**
+     * 添加菜品
+     * @param category
+     * @return
+     */
+    @PostMapping
+    public Result<String> insertCategory(@RequestBody Category category){
+        boolean save = categoryService.save(category);
+        //判断是否添加成功
+        if (save){
+            return Result.success("添加成功！");
+        }
+        return Result.error("添加失败");
+    }
+
+    /**
+     * 修改菜品
+     * @param category 更新后参数
+     * @return Result<Boolean> 更新结果
+     */
+    @PutMapping
+    public Result<String> updateCategory(@RequestBody Category category){
+        boolean updateById = categoryService.updateById(category);
+        //判断是否修改成功
+        if (updateById){
+            return Result.success("修改成功！");
+        }
+        return Result.error("修改失败！");
+    }
+
+
+    /**
+     * 删除一个菜品
+     * @param id 配删除菜品的id
+     * @return Result<Boolean> 删除结果
+     */
+   @DeleteMapping
+    public Result<String> deleteCategory(@RequestParam("ids") Long id){
+        //删除
+        boolean removeById = categoryService.removeById(id);
+        if (removeById){
+            return Result.success("删除成功");
+        }
+        return Result.error("删除失败！");
+    }
 
 }

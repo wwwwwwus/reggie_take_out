@@ -24,7 +24,7 @@ public class MetaDataHandler implements MetaObjectHandler {
         metaObject.setValue("createTime", LocalDateTime.now());
         //metaObject.setValue("createUser", httpServletRequest.getSession().getAttribute("id"));
         //metaObject.setValue("updateUser", httpServletRequest.getSession().getAttribute("id"));
-        metaObject.setValue("updateUser", BaseContext.getEmployeeId());
+        metaObject.setValue("createUser", BaseContext.getEmployeeId());
         metaObject.setValue("updateUser", BaseContext.getEmployeeId());
     }
 
