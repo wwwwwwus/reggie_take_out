@@ -7,7 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.wusong.common.Result;
 import top.wusong.domain.Category;
+import top.wusong.dto.DishFlavorDto;
 import top.wusong.service.CategoryService;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/category")
@@ -76,5 +80,25 @@ public class CategoryController {
         categoryService.delete(id);
         return Result.success("删除成功！");
     }
+
+    /**
+     * 查询菜品类型
+     * @param type 菜品类型对应的数字
+     * @return Result<List<Category>> 查询结果集合
+     */
+    @GetMapping("list")
+    public Result<List<Category>> listByType(Integer type){
+       //构建条件
+        LambdaQueryWrapper<Category> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if (type != null){
+            lambdaQueryWrapper.eq(Category::getType,type);
+        }
+        //添加排序时间
+        lambdaQueryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+        List<Category> list = categoryService.list(lambdaQueryWrapper);
+        return Result.success(list);
+    }
+
+
 
 }
