@@ -66,18 +66,15 @@ public class CategoryController {
 
 
     /**
-     * 删除一个菜品
+     * 删除一个菜品,删除前要确定该菜品下是否绑定了菜品
      * @param id 配删除菜品的id
      * @return Result<Boolean> 删除结果
      */
    @DeleteMapping
     public Result<String> deleteCategory(@RequestParam("ids") Long id){
         //删除
-        boolean removeById = categoryService.removeById(id);
-        if (removeById){
-            return Result.success("删除成功");
-        }
-        return Result.error("删除失败！");
+        categoryService.delete(id);
+        return Result.success("删除成功！");
     }
 
 }
