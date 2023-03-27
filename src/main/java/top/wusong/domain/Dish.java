@@ -18,6 +18,7 @@ public class Dish implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long id;
 
 
@@ -25,7 +26,9 @@ public class Dish implements Serializable {
     private String name;
 
 
+
     //菜品分类id
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long categoryId;
 
 

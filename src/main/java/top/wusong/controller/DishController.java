@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import top.wusong.common.Result;
 import top.wusong.domain.Category;
 import top.wusong.domain.Dish;
+import top.wusong.domain.DishFlavor;
 import top.wusong.domain.Setmeal;
 import top.wusong.dto.DishFlavorDto;
 import top.wusong.service.CategoryService;
 import top.wusong.service.DIshService;
+import top.wusong.service.DishFlavorService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +28,8 @@ public class DishController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private DishFlavorService dishFlavorService;
     /**
      * 分页查询
      *
@@ -87,6 +91,37 @@ public class DishController {
         //需要调用两个保存方法
         dIshService.insert(dto);
         return Result.success("添加成功！");
+    }
+
+    @GetMapping("/{id}")
+    public Result<DishFlavorDto> updateById(@PathVariable Long id){
+        //查询菜品对象
+        Dish byId = dIshService.getById(id);
+        //查询菜品对应的口味
+        LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //构造条件
+        dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId,id);
+        //调用查询语句
+        List<DishFlavor> dishFlavors = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
+        //新建结果对象
+        DishFlavorDto dto = new DishFlavorDto();
+        //把对应的结果复制给结果对象
+        BeanUtils.copyProperties(byId,dto);
+        //根据菜品名查询菜品分类
+        Category category = categoryService.getById(byId.getCategoryId());
+        //把口味的值附上
+        dto.setFlavors(dishFlavors);
+        //把菜品种类设置上
+        dto.setCategoryName(category.getName());
+        return Result.success(dto);
+    }
+
+    @PutMapping
+    public Result<String> updateByIdTwo(@RequestBody DishFlavorDto dto){
+        System.out.println("dto:"+dto);
+        dIshService.updateTwo(dto);
+        return Result.success("修改成功！");
+
     }
 
 }
