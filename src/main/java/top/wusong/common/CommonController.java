@@ -77,11 +77,9 @@ public class CommonController {
                 outputStream.write(bytes,0,len);
                 outputStream.flush();
             }
-
             //释放资源
             fileInputStream.close();
             outputStream.close();
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
