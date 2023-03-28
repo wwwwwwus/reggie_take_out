@@ -1,5 +1,6 @@
 package top.wusong.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wusong.domain.Setmeal;
 import top.wusong.domain.SetmealDish;
 import top.wusong.dto.SetmealDto;
+import top.wusong.exception.BusinessException;
 import top.wusong.mapper.SetmealDao;
 import top.wusong.service.SetmealDishService;
 import top.wusong.service.SetmealService;
@@ -48,6 +50,16 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealDao, Setmeal> impleme
     @Transactional
     public void deleteByIds(List<Long> ids) {
         if (ids.size()>0){
+            //要判断是否有在售的套餐，在售的套餐是不能删除的
+            LambdaQueryWrapper<Setmeal> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            //构造条件，在这些id里面有没有status为1的
+            lambdaQueryWrapper.in(Setmeal::getId,ids).eq(Setmeal::getStatus,1);
+            //查询
+            int count = this.count(lambdaQueryWrapper);
+            //判断是否有
+            if (count > 0){
+                throw new BusinessException("套餐在售中，无法删除！");
+            }
             //先删除套餐
             this.removeByIds(ids);
             //然后删除套餐包含的菜品

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wusong.domain.Dish;
 import top.wusong.domain.DishFlavor;
 import top.wusong.dto.DishFlavorDto;
+import top.wusong.exception.BusinessException;
 import top.wusong.mapper.DishDao;
 import top.wusong.service.DIshService;
 import top.wusong.service.DishFlavorService;
@@ -64,6 +65,14 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshS
         /*
         删除一个菜品，需要同时把菜品下对应的口味也删除
          */
+        //删除前要判断是否在售
+        LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //判断当前的菜品是否是在售当中
+        lambdaQueryWrapper.in(Dish::getId,ids).eq(Dish::getStatus,1);
+        int count = this.count(lambdaQueryWrapper);
+        if (count > 0){
+            throw new BusinessException("菜品在售中，无法删除!");
+        }
         //删除菜品
         ids.forEach((this::removeById));
         //删除菜品对应的口味
