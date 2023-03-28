@@ -1,8 +1,9 @@
 package top.wusong.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,6 @@ import top.wusong.common.Result;
 import top.wusong.domain.Category;
 import top.wusong.domain.Dish;
 import top.wusong.domain.DishFlavor;
-import top.wusong.domain.Setmeal;
 import top.wusong.dto.DishFlavorDto;
 import top.wusong.service.CategoryService;
 import top.wusong.service.DIshService;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/dish")
+@Slf4j
 public class DishController {
     @Autowired
     private DIshService dIshService;
@@ -30,6 +31,7 @@ public class DishController {
 
     @Autowired
     private DishFlavorService dishFlavorService;
+
     /**
      * 分页查询
      *
@@ -67,8 +69,8 @@ public class DishController {
             //把剩余的dish和dto剩余的参数化复制一下
             BeanUtils.copyProperties(dish, dto);
             //设置参数
-            if (category != null){
-            dto.setCategoryName(category.getName());
+            if (category != null) {
+                dto.setCategoryName(category.getName());
             }
             //返回新的泛型
             return dto;
@@ -93,20 +95,25 @@ public class DishController {
         return Result.success("添加成功！");
     }
 
+    /**
+     * 更新单个菜品以及更新菜品的口味
+     * @param id 需要更新的菜品
+     * @return Result<DishFlavorDto> 更新结果
+     */
     @GetMapping("/{id}")
-    public Result<DishFlavorDto> updateById(@PathVariable Long id){
+    public Result<DishFlavorDto> updateById(@PathVariable Long id) {
         //查询菜品对象
         Dish byId = dIshService.getById(id);
         //查询菜品对应的口味
         LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
         //构造条件
-        dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId,id);
+        dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId, id);
         //调用查询语句
         List<DishFlavor> dishFlavors = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
         //新建结果对象
         DishFlavorDto dto = new DishFlavorDto();
         //把对应的结果复制给结果对象
-        BeanUtils.copyProperties(byId,dto);
+        BeanUtils.copyProperties(byId, dto);
         //根据菜品名查询菜品分类
         Category category = categoryService.getById(byId.getCategoryId());
         //把口味的值附上
@@ -116,12 +123,74 @@ public class DishController {
         return Result.success(dto);
     }
 
+    /**
+     * 修改菜品，一同修改的还有菜品对应的口味
+     *
+     * @param dto 包含才菜品和口味的实体类对象
+     * @return Result<String> 修改结果
+     */
     @PutMapping
-    public Result<String> updateByIdTwo(@RequestBody DishFlavorDto dto){
-        System.out.println("dto:"+dto);
+    public Result<String> updateByIdTwo(@RequestBody DishFlavorDto dto) {
+        System.out.println("dto:" + dto);
         dIshService.updateTwo(dto);
         return Result.success("修改成功！");
 
     }
 
+    /**
+     * 根据id删除一个菜品。删除的同还要删除对应的口味
+     *
+     * @param ids 需要删除菜品的id集合
+     * @return Result<String> 删除结果
+     */
+    @DeleteMapping
+    public Result<String> deleteByID(@RequestParam("ids") List<Long> ids) {
+        //删除方法
+        dIshService.deleteById(ids);
+        return Result.success("删除成功！");
+    }
+
+    /**
+     * 更改菜品的在售状态
+     * @param type 是在售还是停用
+     * @param ids 需要更改状态的集合
+     * @return Result<String> 修改结果
+     */
+    @PostMapping("/status/{type}")
+    public Result<String> updateStatus(@PathVariable Integer type, @RequestParam("ids") List<Long> ids) {
+        //判断是启用还是停售
+        if (type == 1) {
+            ids.forEach((id) -> {
+                dIshService.update(new LambdaUpdateWrapper<Dish>().eq(Dish::getId, id).set(Dish::getStatus, 1));
+            });
+        } else {
+            //不等于1的则是停售
+            ids.forEach((id) -> {
+                dIshService.update(new LambdaUpdateWrapper<Dish>().eq(Dish::getId, id).set(Dish::getStatus, 0));
+            });
+        }
+        return Result.success("设置成功！");
+    }
+
+    /**
+     * 给套餐查询一系列的套餐对应的菜品
+     * @param dish 菜品
+     * @return Result<List<Dish>> 菜品集合
+     */
+    @GetMapping("/list")
+    public Result<List<Dish>> getList(Dish dish){
+        log.info("查询的dish为 { }"+dish);
+        //构建条件
+        LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //当前id的菜品
+        lambdaQueryWrapper.eq(dish.getCategoryId() != null,Dish::getCategoryId,dish.getCategoryId()).
+                //排序
+                orderByAsc(Dish::getSort).
+                orderByDesc(Dish::getUpdateTime).
+                //只查询在售的
+                eq(Dish::getStatus,1);
+        List<Dish> list = dIshService.list(lambdaQueryWrapper);
+        return Result.success(list);
+
+    }
 }

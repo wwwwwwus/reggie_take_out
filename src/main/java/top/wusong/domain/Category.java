@@ -6,11 +6,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
-public class Category {
+public class Category implements Serializable {
     @TableId//代表该字段为主键
     @JsonFormat(shape = JsonFormat.Shape.STRING)//自动将值变成字符串
     private Long id;

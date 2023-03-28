@@ -2,7 +2,6 @@ package top.wusong.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +12,7 @@ import top.wusong.mapper.DishDao;
 import top.wusong.service.DIshService;
 import top.wusong.service.DishFlavorService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,5 +56,17 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshS
         }).collect(Collectors.toList());
         //插入
         dishFlavorService.saveBatch(dishFlavors);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(List<Long> ids) {
+        /*
+        删除一个菜品，需要同时把菜品下对应的口味也删除
+         */
+        //删除菜品
+        ids.forEach((this::removeById));
+        //删除菜品对应的口味
+        ids.forEach((id) -> { dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId,id));});
     }
 }
