@@ -24,6 +24,7 @@ public class MetaDataHandler implements MetaObjectHandler {
         metaObject.setValue("createTime", LocalDateTime.now());
         //metaObject.setValue("createUser", httpServletRequest.getSession().getAttribute("id"));
         //metaObject.setValue("updateUser", httpServletRequest.getSession().getAttribute("id"));
+        //                                     当多个session时，若每个名称都一样的， 则会出现线程冲突，所以这个时候使用线程锁的形式来存储每个用户的唯一标识
         metaObject.setValue("createUser", BaseContext.getEmployeeId());
         metaObject.setValue("updateUser", BaseContext.getEmployeeId());
     }
