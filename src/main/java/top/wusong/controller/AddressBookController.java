@@ -115,4 +115,19 @@ public class AddressBookController {
         });
         return Result.success("删除成功！");
     }
+
+    /**
+     * 获取默认地址
+     * @return 默认地址
+     */
+    @GetMapping("/default")
+    public Result<AddressBook> getDefaultAddressBook(  ){
+        System.out.println("BaseContext.getEmployeeId():"+BaseContext.getEmployeeId());
+        //根据id查询
+        LambdaQueryWrapper<AddressBook> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(AddressBook::getUserId,BaseContext.getEmployeeId()).eq(AddressBook::getIsDefault,1);
+        AddressBook addressBook = addressBookService.getOne(lambdaQueryWrapper);
+        return Result.success(addressBook);
+
+    }
 }

@@ -95,4 +95,34 @@ public class ShoppingCartController {
         shoppingCartService.remove(lambdaUpdateWrapper);
         return Result.success("删除成功！");
     }
+
+    @PostMapping("/sub")
+    public Result<ShoppingCart> subShoppingCart(@RequestBody ShoppingCart shoppingCart){
+        //获取用户的id
+        Long userId = BaseContext.getEmployeeId();
+        //根据当前用户id和菜品/套餐id查询套餐数量，看看还有多少
+        LambdaQueryWrapper<ShoppingCart> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ShoppingCart::getUserId,userId);
+        Long dishId = shoppingCart.getDishId();
+        if (dishId != null){
+            lambdaQueryWrapper.eq(ShoppingCart::getDishId,dishId);
+        }else {
+            lambdaQueryWrapper.eq(ShoppingCart::getSetmealId,shoppingCart.getSetmealId());
+        }
+        //查询结果
+        ShoppingCart shoppingCartServiceOne = shoppingCartService.getOne(lambdaQueryWrapper);
+        Integer number = shoppingCartServiceOne.getNumber();
+        //判断数量是否为1，若是为去则直接删除，如不是1，则数量减一
+        if (number <= 1){
+            shoppingCartService.removeById(shoppingCartServiceOne);
+            //设置数量为0
+            shoppingCartServiceOne.setNumber(0);
+            return Result.success(shoppingCartServiceOne);
+        }else {
+            shoppingCartServiceOne.setNumber(number - 1);
+            shoppingCartService.updateById(shoppingCartServiceOne);
+            return Result.success(shoppingCartServiceOne);
+        }
+
+    }
 }
