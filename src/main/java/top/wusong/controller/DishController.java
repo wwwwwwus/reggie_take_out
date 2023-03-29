@@ -16,6 +16,7 @@ import top.wusong.service.CategoryService;
 import top.wusong.service.DIshService;
 import top.wusong.service.DishFlavorService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,6 +98,7 @@ public class DishController {
 
     /**
      * 更新单个菜品以及更新菜品的口味
+     *
      * @param id 需要更新的菜品
      * @return Result<DishFlavorDto> 更新结果
      */
@@ -152,8 +154,9 @@ public class DishController {
 
     /**
      * 更改菜品的在售状态
+     *
      * @param type 是在售还是停用
-     * @param ids 需要更改状态的集合
+     * @param ids  需要更改状态的集合
      * @return Result<String> 修改结果
      */
     @PostMapping("/status/{type}")
@@ -172,12 +175,8 @@ public class DishController {
         return Result.success("设置成功！");
     }
 
-    /**
-     * 给套餐查询一系列的套餐对应的菜品
-     * @param dish 菜品
-     * @return Result<List<Dish>> 菜品集合
-     */
-    @GetMapping("/list")
+
+   /* @GetMapping("/list")
     public Result<List<Dish>> getList(Dish dish){
         log.info("查询的dish为 { }"+dish);
         //构建条件
@@ -191,6 +190,44 @@ public class DishController {
                 eq(Dish::getStatus,1);
         List<Dish> list = dIshService.list(lambdaQueryWrapper);
         return Result.success(list);
+
+    }*/
+
+    /**
+     * 给套餐查询一系列的套餐对应的菜品 ，需要再增强一下，用户端也需要该方法来展示每一个菜品的口味
+     *
+     * @param dish 菜品
+     * @return Result<List < Dish>> 菜品集合
+     */
+    @GetMapping("/list")
+    public Result<List<DishFlavorDto>> getList(Dish dish) {
+        log.info("查询的dish为 { }" + dish);
+        //构建条件
+        LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        //当前id的菜品
+        lambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId()).
+                //排序
+                        orderByAsc(Dish::getSort).
+                orderByDesc(Dish::getUpdateTime).
+                //只查询在售的
+                        eq(Dish::getStatus, 1);
+        List<Dish> list = dIshService.list(lambdaQueryWrapper);
+        //新建一个菜品和菜品所对应的口味对象
+        List<DishFlavorDto> dishFlavorDtos = new ArrayList<>();
+        //把已查询的结果复制过去
+        dishFlavorDtos = list.stream().map(dish1 -> {
+            DishFlavorDto dishFlavorDto = new DishFlavorDto();
+            //把菜品复制过去
+            BeanUtils.copyProperties(dish1, dishFlavorDto);
+            //通过菜品查询对应的口味
+            List<DishFlavor> dishFlavors = dishFlavorService.list(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId, dish1.getId()));
+            //设置对应的口味
+            dishFlavorDto.setFlavors(dishFlavors);
+            //返回新的对象
+            return dishFlavorDto;
+        }).collect(Collectors.toList());
+
+        return Result.success(dishFlavorDtos);
 
     }
 }
