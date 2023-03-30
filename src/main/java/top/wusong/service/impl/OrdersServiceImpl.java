@@ -58,6 +58,8 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersDao, Orders> implements
         Long employeeId = BaseContext.getEmployeeId();
         //查询用户
         User user = userService.getById(employeeId);
+        System.out.println("user:"+user);
+        System.out.println("user:"+user.getId());
         //获取用户的默认地址
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookService.getById(addressBookId);

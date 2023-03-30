@@ -27,12 +27,12 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshS
 
     private final DishDao dishDao;
 
+    @Autowired
     public DishServiceImpl(DishFlavorService dishFlavorService, DishDao dishDao) {
         this.dishFlavorService = dishFlavorService;
         this.dishDao = dishDao;
     }
 
-    @Autowired
 
     @Override
     @Transactional//一个方法同时对多张表进行操作时需要用事务进行管理

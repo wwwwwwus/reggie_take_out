@@ -73,6 +73,7 @@ public class UserController {
         }
         return Result.error("验证码发送失败！请稍后重试！");
     }
+
     /**
      * 发送验证码并返回验证码
      *
@@ -110,7 +111,8 @@ public class UserController {
 
     /**
      * 用户登录
-     * @param map 手机号码和短信
+     *
+     * @param map     手机号码和短信
      * @param session 存入用户的登入信息
      * @return
      */
@@ -133,18 +135,19 @@ public class UserController {
                 user.setStatus(1);
                 userService.save(user);
             }
-            session.setAttribute("userid",user.getId());
+            session.setAttribute("userid", user.getId());
             return Result.success(user);
         }
         return Result.error("登录失败！");
     }
 
 
-
-
-
-
-
+    @PostMapping("/loginout")
+    public Result<String> loginout(HttpSession session) {
+        //从session删除id
+        session.removeAttribute("userid");
+        return Result.success("退出成功！");
+    }
 
 
 }
