@@ -17,16 +17,57 @@ import java.util.List;
 public class OrdersController {
 
 
-    @Autowired
-    private OrdersService ordersService;
+    private static final String SUCCESS_MESSAGE = "操作成功！";
 
+    @Autowired
+    private OrdersService orderService;
+
+    /**
+     * 下单
+     *
+     * @param orders 订单对象
+     * @return Result<String>
+     */
     @PostMapping("/submit")
+    public Result<String> submitOrder(@RequestBody Orders orders) {
+        orderService.orders(orders);
+        return Result.success(SUCCESS_MESSAGE);
+    }
+
+ /*   @PostMapping("/submit")
     public Result<String> order(@RequestBody Orders orders) {
         ordersService.orders(orders);
         return Result.success("下单成功！");
+    }*/
+
+    /**
+     * 获取用户订单
+     *
+     * @param page     页码
+     * @param pageSize 每页数量
+     * @return Result<Page < Orders>>
+     */
+    @GetMapping("")
+    public Result<Page<Orders>> getUserOrders(@RequestParam(defaultValue = "1") Integer page,
+                                              @RequestParam(defaultValue = "10") Integer pageSize) {
+        // 参数校验
+        if (page < 1) {
+            page = 1;
+        }
+        if (pageSize < 1 || pageSize > 100) {
+            pageSize = 10;
+        }
+
+        // 查询分页数据
+        Page<Orders> pages = new Page<>(page, pageSize);
+        orderService.page(pages, new LambdaQueryWrapper<Orders>().eq(Orders::getUserId, BaseContext.getEmployeeId()));
+
+        return Result.success(pages);
     }
 
-    @GetMapping("/userPage")
+
+
+   /* @GetMapping("/userPage")
     public Result<Page<Orders>> getAllOrders(Integer page, Integer pageSize) {
         //获取分页
         Page<Orders> pages = new Page<>(page,pageSize);
@@ -34,6 +75,6 @@ public class OrdersController {
         ordersService.page(pages, new LambdaQueryWrapper<Orders>().eq(Orders::getUserId, BaseContext.getEmployeeId()));
 
         return Result.success(pages);
-    }
+    }*/
 
 }

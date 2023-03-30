@@ -13,40 +13,37 @@ import top.wusong.service.EmployeeService;
 public class EmployeeServiceImpl extends ServiceImpl<EmployeeDao, Employee> implements EmployeeService {
     @Autowired
     private EmployeeDao employeeDao;
+
     @Override
     @Transactional
     public boolean addEmployee(Employee employee) {
         //1、先查询是否有对应的用户
         LambdaQueryWrapper<Employee> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Employee::getUsername,employee.getUsername());
+        lambdaQueryWrapper.eq(Employee::getUsername, employee.getUsername());
         Employee employee1 = employeeDao.selectOne(lambdaQueryWrapper);
         //2、判断是否存在这个用户名称
-        if (employee1 != null ){
+        if (employee1 != null) {
             //不存在直接返回值false
             return false;
         }
         //3、不存在，进入添加操作
         int insert = employeeDao.insert(employee);
-        if (insert == 1){
-            //影响行数为1.说明添加成功！
-            return true;
-        }
-        return false;
+
+        return insert == 1;
     }
 
     //gpt的优化
     public boolean addEmployee1(Employee employee) {
         //1、先查询是否有对应的用户
         LambdaQueryWrapper<Employee> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Employee::getUsername,employee.getUsername());
+        lambdaQueryWrapper.eq(Employee::getUsername, employee.getUsername());
         Employee employee1 = getOne(lambdaQueryWrapper);
         //2、判断是否存在这个用户名称
-        if (employee1 != null ){
+        if (employee1 != null) {
             //不存在直接返回值false
             return false;
         }
         //3、不存在，进入添加操作
-        boolean result = save(employee);
-        return result;
+        return save(employee);
     }
 }

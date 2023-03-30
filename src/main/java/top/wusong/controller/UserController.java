@@ -107,6 +107,13 @@ public class UserController {
         }
         return Result.error("登录失败！");
     }
+
+    /**
+     * 用户登录
+     * @param map 手机号码和短信
+     * @param session 存入用户的登入信息
+     * @return
+     */
     @PostMapping("/login")
     public Result<User> login(@RequestBody Map map, HttpSession session) {
         log.info("code{}", map.get("code"));

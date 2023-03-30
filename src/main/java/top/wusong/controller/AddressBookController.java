@@ -109,10 +109,14 @@ public class AddressBookController {
      */
     @DeleteMapping
     public Result<String> deleteAddressBook(@RequestParam("ids") List<Long> ids){
+        boolean remove = addressBookService.removeByIds(ids);
         //删除
-        ids.forEach((id) -> {
+       /* ids.forEach((id) -> {
             addressBookService.removeById(id);
-        });
+        });*/
+        if (!remove){
+            return Result.error("删除失败！");
+        }
         return Result.success("删除成功！");
     }
 
@@ -122,11 +126,25 @@ public class AddressBookController {
      */
     @GetMapping("/default")
     public Result<AddressBook> getDefaultAddressBook(  ){
-        System.out.println("BaseContext.getEmployeeId():"+BaseContext.getEmployeeId());
+       /* System.out.println("BaseContext.getEmployeeId():"+BaseContext.getEmployeeId());
         //根据id查询
         LambdaQueryWrapper<AddressBook> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(AddressBook::getUserId,BaseContext.getEmployeeId()).eq(AddressBook::getIsDefault,1);
         AddressBook addressBook = addressBookService.getOne(lambdaQueryWrapper);
+        return Result.success(addressBook);*/
+        //先获取用户的id
+        Long userId = BaseContext.getEmployeeId();
+        if (userId == null) {
+            return Result.error("获取当前用户信息失败！");
+        }
+        //构建查询条件
+        LambdaQueryWrapper<AddressBook> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(AddressBook::getUserId, userId).eq(AddressBook::getIsDefault, 1);
+        AddressBook addressBook = addressBookService.getOne(lambdaQueryWrapper);
+        //判断用户是否有默认地址
+        if (addressBook == null) {
+            return Result.error("当前用户没有默认地址！");
+        }
         return Result.success(addressBook);
 
     }

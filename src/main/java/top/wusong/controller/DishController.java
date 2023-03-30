@@ -24,14 +24,21 @@ import java.util.stream.Collectors;
 @RequestMapping("/dish")
 @Slf4j
 public class DishController {
-    @Autowired
-    private DIshService dIshService;
+
+    private final DIshService dIshService;
+
+
+    private final CategoryService categoryService;
+
+
+    private final DishFlavorService dishFlavorService;
 
     @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private DishFlavorService dishFlavorService;
+    public DishController(DIshService dIshService, CategoryService categoryService, DishFlavorService dishFlavorService) {
+        this.dIshService = dIshService;
+        this.categoryService = categoryService;
+        this.dishFlavorService = dishFlavorService;
+    }
 
     /**
      * 分页查询
@@ -162,7 +169,7 @@ public class DishController {
     @PostMapping("/status/{type}")
     public Result<String> updateStatus(@PathVariable Integer type, @RequestParam("ids") List<Long> ids) {
         //判断是启用还是停售
-        if (type == 1) {
+       /* if (type == 1) {
             ids.forEach((id) -> {
                 dIshService.update(new LambdaUpdateWrapper<Dish>().eq(Dish::getId, id).set(Dish::getStatus, 1));
             });
@@ -171,7 +178,11 @@ public class DishController {
             ids.forEach((id) -> {
                 dIshService.update(new LambdaUpdateWrapper<Dish>().eq(Dish::getId, id).set(Dish::getStatus, 0));
             });
-        }
+        }*/
+
+        ids.forEach((id) -> {
+            dIshService.update(new LambdaUpdateWrapper<Dish>().eq(Dish::getId, id).set(Dish::getStatus, type == 1 ? 1 : 0));
+        });
         return Result.success("设置成功！");
     }
 
