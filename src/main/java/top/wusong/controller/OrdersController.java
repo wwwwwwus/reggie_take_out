@@ -61,7 +61,6 @@ public class OrdersController {
         // 查询分页数据
         Page<Orders> pages = new Page<>(page, pageSize);
         orderService.page(pages, new LambdaQueryWrapper<Orders>().eq(Orders::getUserId, BaseContext.getEmployeeId()));
-
         return Result.success(pages);
     }
 
