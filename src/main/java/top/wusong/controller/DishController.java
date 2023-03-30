@@ -159,8 +159,8 @@ public class DishController {
      * @param ids  需要更改状态的集合
      * @return Result<String> 修改结果
      */
-    @PostMapping("/status/{type}")
-    public Result<String> updateStatus(@PathVariable Integer type, @RequestParam("ids") List<Long> ids) {
+    //@PostMapping("/status/{type}")
+    public Result<String> updateStatus1(@PathVariable Integer type, @RequestParam("ids") List<Long> ids) {
         //判断是启用还是停售
         if (type == 1) {
             ids.forEach((id) -> {
@@ -175,6 +175,23 @@ public class DishController {
         return Result.success("设置成功！");
     }
 
+    /**
+     * 更改菜品的在售状态
+     *
+     * @param type 是在售还是停用
+     * @param ids  需要更改状态的集合
+     * @return Result<String> 修改结果
+     */
+    @PostMapping("/status/{type}")
+    public Result<String> updateStatus(@PathVariable Integer type, @RequestParam("ids") List<Long> ids) {
+        //判断是启用还是停售
+        ids.forEach((id) -> {
+            dIshService.update(new LambdaUpdateWrapper<Dish>()
+                    .eq(Dish::getId, id)
+                    .set(Dish::getStatus, type == 1 ? 1 : 0));
+        });
+        return Result.success("设置成功！");
+    }
 
    /* @GetMapping("/list")
     public Result<List<Dish>> getList(Dish dish){

@@ -1,6 +1,7 @@
 package top.wusong.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -65,6 +66,37 @@ public class EmployeeController {
 
     }
 
+   // @PostMapping("/login")  gpt优化
+    public Result<Employee> employeeLogin1(@RequestBody Employee employee, HttpServletRequest request) {
+        // 加密密码
+        String encryptedPassword = DigestUtils.md5DigestAsHex(employee.getPassword().getBytes());
+
+        // 查询用户
+        Employee user = employeeService.getOne(new QueryWrapper<Employee>().eq("username", employee.getUsername()));
+        if (user == null) {
+            return Result.error("用户不存在！");
+        }
+
+        // 判断密码是否正确
+        if (!encryptedPassword.equals(user.getPassword())) {
+            return Result.error("用户名或密码错误！");
+        }
+
+        // 判断用户状态是否正常
+        if (user.getStatus() != 1) {
+            return Result.error("该用户已被禁用！");
+        }
+
+        // 登录成功，将用户 ID 存入 session
+        request.getSession().setAttribute("id", user.getId());
+
+        return Result.success(user);
+    }
+
+
+    /*
+
+     */
     /**
      * 退出登录
      *

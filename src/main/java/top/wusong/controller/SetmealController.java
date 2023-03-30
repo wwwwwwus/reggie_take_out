@@ -117,6 +117,35 @@ public class SetmealController {
         });
         return Result.success("状态修改成功！");
     }
+    /**
+     * 修改套餐状态
+     *
+     * @param type 当前状态
+     * @param ids  需要修改状态的集合
+     * @return Result<String> 修改结果
+     */
+   // @PostMapping("/status/{type}")  -- gpt 优化
+    public Result<String> updateStatus1(@PathVariable("type") Integer type, @RequestParam("ids") List<Long> ids) {
+        //构建查询条件
+        LambdaUpdateWrapper<Setmeal> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.in(Setmeal::getId, ids);
+
+        //设置要更新的值
+        if (type == 1) {
+            lambdaUpdateWrapper.set(Setmeal::getStatus, 1);
+        } else {
+            lambdaUpdateWrapper.set(Setmeal::getStatus, 0);
+        }
+
+        //批量更新
+        setmealService.update(lambdaUpdateWrapper);
+
+        return Result.success("状态修改成功！");
+    }
+
+
+
+
 
     /**
      * 修改套餐的第一步，回显数据
@@ -138,6 +167,9 @@ public class SetmealController {
         setmealDto.setSetmealDishes(setmealDishes);
         return Result.success(setmealDto);
     }
+
+
+
 
 
     /**
