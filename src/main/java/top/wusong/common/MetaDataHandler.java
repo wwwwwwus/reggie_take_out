@@ -32,7 +32,7 @@ public class MetaDataHandler implements MetaObjectHandler {
 
 
     /**
-     * 更新时自动增加
+     * 更新时自动增加1
      * @param metaObject
      */
     @Override
