@@ -26,15 +26,28 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SetmealController {
 
-    @Autowired
+  /*  @Autowired
     private SetmealService setmealService;
 
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
-    private SetmealDishService setmealDishService;
+    private SetmealDishService setmealDishService;*/
+  private final SetmealService setmealService;
 
+
+    private final CategoryService categoryService;
+
+
+    private final SetmealDishService setmealDishService;
+
+    @Autowired
+    public SetmealController(SetmealService setmealService, CategoryService categoryService, SetmealDishService setmealDishService) {
+        this.setmealService = setmealService;
+        this.categoryService = categoryService;
+        this.setmealDishService = setmealDishService;
+    }
 
     /**
      * 分页查询套餐页面
@@ -45,7 +58,7 @@ public class SetmealController {
      * @return Result<Page < Setmeal>> 分页结果
      */
     @GetMapping("/page")
-    public Result<Page<SetmealDto>> getAllByPage(Integer page, Integer pageSize, String name) {
+    public Result<Page<SetmealDto>> getAllByPage(@RequestParam(defaultValue = "1") Integer page,@RequestParam(defaultValue = "10") Integer pageSize, String name) {
         LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
         if (name != null) {
             setmealLambdaQueryWrapper.like(Setmeal::getName, name);
@@ -108,12 +121,15 @@ public class SetmealController {
     @PostMapping("/status/{type}")
     public Result<String> updateStatus(@PathVariable("type") Integer type, @RequestParam("ids") List<Long> ids) {
         //判断是否在售
-        ids.forEach((id) -> {
+        /*ids.forEach((id) -> {
             if (type == 1) {
                 setmealService.update(new LambdaUpdateWrapper<Setmeal>().eq(Setmeal::getId, id).set(Setmeal::getStatus, 1));
             } else {
                 setmealService.update(new LambdaUpdateWrapper<Setmeal>().eq(Setmeal::getId, id).set(Setmeal::getStatus, 0));
             }
+        });*/
+        ids.forEach((id) -> {
+                setmealService.update(new LambdaUpdateWrapper<Setmeal>().eq(Setmeal::getId, id).set(Setmeal::getStatus,type == 1 ? 1 : 0));
         });
         return Result.success("状态修改成功！");
     }

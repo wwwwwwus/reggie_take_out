@@ -17,8 +17,13 @@ import java.util.Map;
 @RequestMapping("/category")
 public class CategoryController {
 
+    private final CategoryService categoryService;
+
     @Autowired
-    private  CategoryService categoryService;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
 
     /**
      * 分页查询
@@ -26,7 +31,7 @@ public class CategoryController {
      * @param pageSize 每页展示多少条
      * @return Result<Page<Category>> 每页的数据
      */
-    @GetMapping("/page")
+   /* @GetMapping("/page")
     public Result<Page<Category>> getAllByPage(Long page,Long pageSize){
         //设置分页对象，当前是哪页，每页显示多少
         Page<Category> pages = new Page<>(page,pageSize);
@@ -35,6 +40,15 @@ public class CategoryController {
         lambdaQueryWrapper.orderByAsc(Category::getSort);
         //查询
         categoryService.page(pages,lambdaQueryWrapper);
+        return Result.success(pages);
+    }*/
+    @GetMapping("/page")
+    public Result<Page<Category>> getAllByPage(@RequestParam(defaultValue = "1") Long page,
+                                               @RequestParam(defaultValue = "10") Long pageSize) {
+        Page<Category> pages = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Category> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.orderByAsc(Category::getSort);
+        categoryService.page(pages, lambdaQueryWrapper);
         return Result.success(pages);
     }
 
@@ -47,10 +61,11 @@ public class CategoryController {
     public Result<String> insertCategory(@RequestBody Category category){
         boolean save = categoryService.save(category);
         //判断是否添加成功
-        if (save){
+        /*if (save){
             return Result.success("添加成功！");
         }
-        return Result.error("添加失败");
+        return Result.error("添加失败");*/
+        return save ? Result.success("添加成功！") : Result.error("添加失败");
     }
 
     /**
@@ -62,10 +77,11 @@ public class CategoryController {
     public Result<String> updateCategory(@RequestBody Category category){
         boolean updateById = categoryService.updateById(category);
         //判断是否修改成功
-        if (updateById){
+       /* if (updateById){
             return Result.success("修改成功！");
         }
-        return Result.error("修改失败！");
+        return Result.error("修改失败！");*/
+        return updateById ? Result.success("修改成功！") : Result.error("修改失败！");
     }
 
 
@@ -96,6 +112,13 @@ public class CategoryController {
         //添加排序时间
         lambdaQueryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
         List<Category> list = categoryService.list(lambdaQueryWrapper);
+        /*
+         LambdaQueryWrapper<Category> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(type != null, Category::getType, type)
+                .orderByAsc(Category::getSort)
+                .orderByDesc(Category::getUpdateTime);
+        List<Category> list = categoryService.list(lambdaQueryWrapper);
+         */
         return Result.success(list);
     }
 

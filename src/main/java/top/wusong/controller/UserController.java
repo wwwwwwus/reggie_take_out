@@ -53,9 +53,6 @@ public class UserController {
         return Result.error("验证码发送失败！请稍后重试！");
     }
 
-
-
-
     /**
      * 发送验证码
      *
@@ -111,9 +108,13 @@ public class UserController {
         return Result.error("登录失败！");
     }
 
-
-
-
+    /**
+     * 用户登录
+     *
+     * @param map     手机号码和短信
+     * @param session 存入用户的登入信息
+     * @return
+     */
     @PostMapping("/login")
     public Result<User> login(@RequestBody Map map, HttpSession session) {
         log.info("code{}", map.get("code"));
@@ -138,4 +139,14 @@ public class UserController {
         }
         return Result.error("登录失败！");
     }
+
+
+    @PostMapping("/loginout")
+    public Result<String> loginout(HttpSession session) {
+        //从session删除id
+        session.removeAttribute("userid");
+        return Result.success("退出成功！");
+    }
+
+
 }

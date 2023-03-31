@@ -97,6 +97,11 @@ public class ShoppingCartController {
         return Result.success("删除成功！");
     }
 
+    /**
+     * 购物车当中的菜品-1
+     * @param shoppingCart 减去的菜品
+     * @return Result<ShoppingCart> 剩余的菜品
+     */
     @PostMapping("/sub")
     public Result<ShoppingCart> subShoppingCart(@RequestBody ShoppingCart shoppingCart){
         //获取用户的id

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.wusong.common.BaseContext;
 import top.wusong.domain.*;
 import top.wusong.exception.BusinessException;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrdersServiceImpl extends ServiceImpl<OrdersDao, Orders> implements OrdersService {
-    @Autowired
+   /* @Autowired
     private UserService userService;
 
     @Autowired
@@ -29,14 +30,36 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersDao, Orders> implements
     private OrderDetailService orderDetailService;
 
     @Autowired
-    private ShoppingCartService shoppingCartService;
+    private ShoppingCartService shoppingCartService;*/
+
+
+    private final UserService userService;
+
+
+    private final AddressBookService addressBookService;
+
+
+    private final OrderDetailService orderDetailService;
+
+    private final ShoppingCartService shoppingCartService;
+
+    @Autowired
+    public OrdersServiceImpl(UserService userService, AddressBookService addressBookService, OrderDetailService orderDetailService, ShoppingCartService shoppingCartService) {
+        this.userService = userService;
+        this.addressBookService = addressBookService;
+        this.orderDetailService = orderDetailService;
+        this.shoppingCartService = shoppingCartService;
+    }
 
     @Override
+    @Transactional//开启事务
     public void orders(Orders orders) {
         //下单，先获取用户id查询用户
         Long employeeId = BaseContext.getEmployeeId();
         //查询用户
         User user = userService.getById(employeeId);
+        System.out.println("user:"+user);
+        System.out.println("user:"+user.getId());
         //获取用户的默认地址
         Long addressBookId = orders.getAddressBookId();
         AddressBook addressBook = addressBookService.getById(addressBookId);

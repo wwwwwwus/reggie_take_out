@@ -71,6 +71,7 @@ public class SetmealServiceImpl extends ServiceImpl<SetmealDao, Setmeal> impleme
     }
 
     @Override
+    @Transactional
     public void updateWithDish(SetmealDto setmealDto) {
         //修改套餐
         this.updateById(setmealDto);

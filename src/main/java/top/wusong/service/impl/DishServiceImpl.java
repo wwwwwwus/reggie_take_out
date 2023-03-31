@@ -19,10 +19,20 @@ import java.util.stream.Collectors;
 @Service
 public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshService {
 
+    /*  @Autowired
+      private DishFlavorService dishFlavorService;
+      @Autowired
+      private DishDao dishDao;*/
+    private final DishFlavorService dishFlavorService;
+
+    private final DishDao dishDao;
+
     @Autowired
-    private DishFlavorService dishFlavorService;
-    @Autowired
-    private DishDao dishDao;
+    public DishServiceImpl(DishFlavorService dishFlavorService, DishDao dishDao) {
+        this.dishFlavorService = dishFlavorService;
+        this.dishDao = dishDao;
+    }
+
 
     @Override
     @Transactional//一个方法同时对多张表进行操作时需要用事务进行管理
@@ -38,18 +48,15 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshS
                 dishFlavorService.save(dishFlavor);
             }
         }
-
     }
-
 
     @Override
     @Transactional
     public void updateTwo(DishFlavorDto dto) {
-
         //保存菜品
         this.updateById(dto);
         //先把菜品对应的口味删除
-        dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId,dto.getId()));
+        dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId, dto.getId()));
         //重新插入
         List<DishFlavor> dishFlavors = dto.getFlavors().stream().map(dishFlavor -> {
             dishFlavor.setDishId(dto.getId());
@@ -68,14 +75,16 @@ public class DishServiceImpl extends ServiceImpl<DishDao, Dish> implements DIshS
         //删除前要判断是否在售
         LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //判断当前的菜品是否是在售当中
-        lambdaQueryWrapper.in(Dish::getId,ids).eq(Dish::getStatus,1);
+        lambdaQueryWrapper.in(Dish::getId, ids).eq(Dish::getStatus, 1);
         int count = this.count(lambdaQueryWrapper);
-        if (count > 0){
+        if (count > 0) {
             throw new BusinessException("菜品在售中，无法删除!");
         }
         //删除菜品
         ids.forEach((this::removeById));
         //删除菜品对应的口味
-        ids.forEach((id) -> { dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId,id));});
+        ids.forEach((id) -> {
+            dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>().eq(DishFlavor::getDishId, id));
+        });
     }
 }
