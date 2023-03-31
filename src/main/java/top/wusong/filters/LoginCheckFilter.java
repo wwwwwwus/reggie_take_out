@@ -26,7 +26,6 @@ public class LoginCheckFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         //看看都是拦截
         String requestURI = httpServletRequest.getRequestURI();
-
         //1、新建一个数组，里面是不需要拦截的，登录求情和退出登录的请求，以及静态资源
         String[] urls = new String[]{
                 "/employee/login",

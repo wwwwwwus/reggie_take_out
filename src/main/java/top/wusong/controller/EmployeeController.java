@@ -219,11 +219,13 @@ public class EmployeeController {
         //添加修改信息时间
         //employee.setUpdateTime(LocalDateTime.now());
         boolean update_flag = employeeService.updateById(employee);
+        //判断update_flag是否为空
         if (update_flag){
             return Result.success(update_flag);
         }
         return Result.error("更新失败");
     }
+
 
 
 

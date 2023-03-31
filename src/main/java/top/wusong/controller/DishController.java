@@ -229,7 +229,7 @@ public class DishController {
      */
     @GetMapping("/list")
     public Result<List<DishFlavorDto>> getList(Dish dish) {
-        log.info("查询的dish为 { }" + dish);
+        log.info("查询的dish为 { }" ,dish);
         //构建条件
         LambdaQueryWrapper<Dish> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         //当前id的菜品
@@ -258,4 +258,6 @@ public class DishController {
         return Result.success(dishFlavorDtos);
 
     }
+
+
 }
